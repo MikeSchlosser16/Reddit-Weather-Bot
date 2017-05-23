@@ -39,16 +39,21 @@ def run_bot(reddit):
     for comment in reddit.subreddit(SUBREDDIT_USED).comments(limit=50):
             zipCode = check_comment(comment.body)
             if(zipCode != -1):
-                comment.reply(get_weather(zipCode[0]))
-                print("Script has replied to a comment.")
-                database_connector.insert(comment.id)
-    print("Sleeping for 1 minute.")
-    time.sleep(60)
+                if(database_connector.verifyCommentID(comment.id)):
+                    comment.reply(get_weather(zipCode[0]))
+                    print("Script has replied to a comment.")
+                    database_connector.insert(comment.id)
+                else:
+                    print("Script has already responded to this comment.")
+
+    print("Sleeping for 10 minutes.")
+    time.sleep(600)
 
 
 def main():
+
     reddit = authenticate()
-    #database_connector.displayAll()
+    database_connector.displayAll()
     while True:
         run_bot(reddit)
 
